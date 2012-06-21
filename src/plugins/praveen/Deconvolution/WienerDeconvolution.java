@@ -58,6 +58,10 @@ public class WienerDeconvolution extends EzPlug{
 		int nyPSF = h.getSizeY();
 		int nzPSF = h.getSizeZ();
 		
+		Sequence outSeq = null;
+		
+		// TODO not implemented !
+		
 		return outSeq;
 	}
 
