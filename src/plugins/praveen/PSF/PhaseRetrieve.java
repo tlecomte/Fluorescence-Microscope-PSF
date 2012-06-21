@@ -10,6 +10,7 @@ import plugins.adufour.ezplug.EzVarDouble;
 import plugins.adufour.ezplug.EzVarInteger;
 import plugins.adufour.ezplug.EzVarSequence;
 import plugins.adufour.filtering.Convolution1D;
+import plugins.adufour.filtering.ConvolutionException;
 import plugins.adufour.filtering.Kernels1D;
 import icy.math.ArrayMath;
 import icy.math.MathUtil;
@@ -53,7 +54,12 @@ public class PhaseRetrieve extends EzPlug {
 	@Override
 	protected void execute() {
 		Sequence pupil = null;
-		pupil = estimatepupil(_input.getValue(), _xySampling.getValue(), _zSampling.getValue(), _objNA.getValue(), _indexImmersion.getValue(), _lem.getValue(), _bgd.getValue(), _sigma.getValue(), _alpha.getValue(), _nIter.getValue());
+		try {
+			pupil = estimatepupil(_input.getValue(), _xySampling.getValue(), _zSampling.getValue(), _objNA.getValue(), _indexImmersion.getValue(), _lem.getValue(), _bgd.getValue(), _sigma.getValue(), _alpha.getValue(), _nIter.getValue());
+		} catch (ConvolutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		/*addSequence(pupil);		
 		pupil.setName("Estimated Back Aperture Pupil");
 		pupil.setChannelName(0, "Magnitude");
@@ -61,7 +67,7 @@ public class PhaseRetrieve extends EzPlug {
 		//MessageDialog.showDialog("Test is working fine!");
 	}
 
-	public Sequence estimatepupil(Sequence sequence, double _xySampling, double _zSampling, double _objNA, double _indexImmersion, int _lem, int _bgd, double _sigma, double _alpha, int _nIter) 
+	public Sequence estimatepupil(Sequence sequence, double _xySampling, double _zSampling, double _objNA, double _indexImmersion, int _lem, int _bgd, double _sigma, double _alpha, int _nIter) throws ConvolutionException 
 	{
 		// TODO Auto-generated method stub
 		Sequence pupil = new Sequence();
