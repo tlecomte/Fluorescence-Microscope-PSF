@@ -163,7 +163,7 @@ public class ConfocalCalculator {
 
 		Sequence psf3d = new Sequence();
 		psf3d.setName("Confocal PSF");
-		Sequence.phole = new Sequence();
+		Sequence phole = new Sequence();
 
 		for (int k =  0 ; k < _z; k++)
 		{// Define the defocus pupils			
