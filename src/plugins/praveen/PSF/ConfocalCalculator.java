@@ -2,6 +2,10 @@ package plugins.praveen.PSF;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import javax.media.jai.operator.ConvolveDescriptor;
+
+import plugins.praveen.fft.AssignFunction2D;
+import plugins.praveen.fft.AssignFunctions;
+import plugins.praveen.fft.ComplexFunctions;
 import icy.gui.dialog.MessageDialog;
 import icy.image.IcyBufferedImage;
 import icy.sequence.Sequence;
@@ -194,40 +198,12 @@ public class ConfocalCalculator {
 			fft.complexInverse(psf2d, false);
 
 			IcyBufferedImage timg = new IcyBufferedImage(_w, _h, 1, DataType.DOUBLE);
-			timg.beginUpdate();
-			try{
-				for(int x = 0; x < (wc+1); x++)
-				{
-					for(int y = 0; y < (hc+1); y++)
-					{
-						timg.setDataAsDouble(x, y, 0, Math.sqrt(Math.pow(psf2d[(((wc-x) + (hc-y) * _h)*2)+0],2)+Math.pow(psf2d[(((wc-x) + (hc-y) * _h)*2)+1], 2)));
-						//timg.setDataAsDouble(x, y, 1, psf2d[(((wc-x) + (hc-y) * _h)*2)+1]);
-
-					}
-					for(int y = hc+1; y < _h; y++)
-					{
-						timg.setDataAsDouble(x, y, 0, Math.sqrt(Math.pow(psf2d[(((wc-x) + (y-hc) * _h)*2)+0], 2)+Math.pow(psf2d[(((wc-x) + (y-hc) * _h)*2)+1], 2)));
-						//timg.setDataAsDouble(x, y, 1, psf2d[(((wc-x) + (_h+hc-y) * _h)*2)+1]);
-					}
-
-				}
-				for(int x = (wc+1); x < _w; x++)
-				{
-					for(int y = 0; y < (hc+1); y++)
-					{
-						timg.setDataAsDouble(x, y, 0, Math.sqrt(Math.pow(psf2d[(((x-wc) + (hc-y) * _h)*2)+0], 2)+Math.pow(psf2d[(((x-wc) + (hc-y) * _h)*2)+1], 2)));
-						//timg.setDataAsDouble(x, y, 1, psf2d[(((_w+wc-x) + (hc-y) * _h)*2)+1]);
-					}
-					for(int y = hc+1; y < _h; y++)
-					{
-						timg.setDataAsDouble(x, y, 0, Math.sqrt(Math.pow(psf2d[(((x-wc) + (y-hc) * _h)*2)+0], 2)+Math.pow(psf2d[(((x-wc) + (y-hc) * _h)*2)+1],2)));
-						//timg.setDataAsDouble(x, y, 1, psf2d[(((_w+wc-x) + (_h+hc-y) * _h)*2)+1]);
-					}
-				}
-
-			}finally {
-				timg.endUpdate();
-			}
+			double[] timgData = timg.getDataXYAsDouble(0);
+			
+			AssignFunction2D assignFunction = new AssignFunctions.SwapAssign2D();
+			assignFunction.assign(psf2d, timgData, _w, _h, new ComplexFunctions.Magnitude());
+			
+			timg.dataChanged();
 
 			psf3d.addImage(timg);
 		}
