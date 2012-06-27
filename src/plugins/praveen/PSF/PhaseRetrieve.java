@@ -12,6 +12,9 @@ import plugins.adufour.ezplug.EzVarSequence;
 import plugins.adufour.filtering.Convolution1D;
 import plugins.adufour.filtering.ConvolutionException;
 import plugins.adufour.filtering.Kernels1D;
+import plugins.praveen.fft.AssignFunction2D;
+import plugins.praveen.fft.AssignFunctions;
+import plugins.praveen.fft.ComplexFunctions;
 import icy.math.ArrayMath;
 import icy.math.MathUtil;
 
@@ -265,54 +268,20 @@ public class PhaseRetrieve extends EzPlug {
 				double[] psfReBuffer = psfCentered.getDataXYAsDouble(0);//Real
 				double[] psfImBuffer = psfCentered.getDataXYAsDouble(1);//imaginary
 
-				for(int x = 0; x < (wc+1); x++)
+				// swap quadrants, split real/complex
+				AssignFunction2D assignFunction = new AssignFunctions.SwapAssign2D();
+				assignFunction.assign(psf2d, psfReBuffer, _w, _h, new ComplexFunctions.Real());
+				assignFunction.assign(psf2d, psfImBuffer, _w, _h, new ComplexFunctions.Imag());
+				
+				//update
+				for(int x = 0; x < _w; x++)
 				{
-					for(int y = 0; y < (hc+1); y++)
+					for(int y = 0; y < _h; y++)
 					{
 						double r = Math.sqrt( Math.pow(x-wc, 2) + Math.pow(y-hc, 2) );
-						psfReBuffer[x + y * _w] = psf2d[(((wc-x) + (hc-y) * _w)*2) + 0];	
-						psfImBuffer[x + y * _w] = psf2d[(((wc-x) + (hc-y) * _w)*2) + 1];
 						double psf = Double.MIN_VALUE + Math.pow(psfReBuffer[x + y * _w], 2) + Math.pow(psfImBuffer[x + y * _w], 2);
-						//Update 
 						psfReBuffer[x + y * _w] = ((r < _rMax) ? 1 : 0) * psfReBuffer[x + y * _w]  * (1 - _alpha + (_alpha * bgRemovedArray[cPlane + selectedPlanes[iz]][x + y * _w]/psf) ); 
 						psfImBuffer[x + y * _w] = ((r < _rMax) ? 1 : 0) * psfImBuffer[x + y * _w]  * (1 - _alpha + (_alpha * bgRemovedArray[cPlane + selectedPlanes[iz]][x + y * _w]/psf) );
-
-					}
-					for(int y = hc+1; y < _h; y++)
-					{
-						double r = Math.sqrt( Math.pow(x-wc, 2) + Math.pow(y-hc, 2) );
-						psfReBuffer[x + y * _w] = psf2d[(((wc-x) + (_h+ hc-y) * _w)*2) + 0];	
-						psfImBuffer[x + y * _w] = psf2d[(((wc-x) + (_h+ hc-y) * _w)*2) + 1];
-						double psf = Double.MIN_VALUE + Math.pow(psfReBuffer[x + y * _w], 2) + Math.pow(psfImBuffer[x + y * _w], 2);
-						// Update 
-						psfReBuffer[x + y * _w] = ((r < _rMax) ? 1 : 0) * psfReBuffer[x + y * _w]  * (1 - _alpha + (_alpha * bgRemovedArray[cPlane + selectedPlanes[iz]][x + y * _w]/psf) ); 
-						psfImBuffer[x + y * _w] = ((r < _rMax) ? 1 : 0) * psfImBuffer[x + y * _w]  * (1 - _alpha + (_alpha * bgRemovedArray[cPlane + selectedPlanes[iz]][x + y * _w]/psf) );
-
-					}
-
-				}
-				for(int x = (wc+1); x < _w; x++)
-				{
-					for(int y = 0; y < (hc+1); y++)
-					{
-						double r = Math.sqrt( Math.pow(x-wc, 2) + Math.pow(y-hc, 2) );
-						psfReBuffer[x + y * _w] = psf2d[(((_w+wc-x) + (hc-y) * _w)*2) + 0];	
-						psfImBuffer[x + y * _w] = psf2d[(((_w+wc-x) + (hc-y) * _w)*2) + 1];
-						double psf = Double.MIN_VALUE + Math.pow(psfReBuffer[x + y * _w], 2) + Math.pow(psfImBuffer[x + y * _w], 2);
-						// Update 
-						psfReBuffer[x + y * _w] = ((r < _rMax) ? 1 : 0) * psfReBuffer[x + y * _w]  * (1 - _alpha + (_alpha * bgRemovedArray[cPlane + selectedPlanes[iz]][x + y * _w]/psf) ); 
-						psfImBuffer[x + y * _w] = ((r < _rMax) ? 1 : 0) * psfImBuffer[x + y * _w]  * (1 - _alpha + (_alpha * bgRemovedArray[cPlane + selectedPlanes[iz]][x + y * _w]/psf) );
-					}
-					for(int y = hc+1; y < _h; y++)
-					{
-						double r = Math.sqrt( Math.pow(x-wc, 2) + Math.pow(y-hc, 2) );
-						psfReBuffer[x + y * _w] = psf2d[(((_w+wc-x) + (_h+ hc-y) * _w)*2) + 0];	
-						psfImBuffer[x + y * _w] = psf2d[(((_w+wc-x) + (_h+ hc-y) * _w)*2) + 1];
-						double psf = Double.MIN_VALUE + Math.pow(psfReBuffer[x + y * _w], 2) + Math.pow(psfImBuffer[x + y * _w], 2);
-						// Update 
-						psfReBuffer[x + y * _w] = ((r < _rMax) ? 1 : 0) * (psfReBuffer[x + y * _w]  * (1 - _alpha + (_alpha * bgRemovedArray[cPlane + selectedPlanes[iz]][x + y * _w]/psf) )); 
-						psfImBuffer[x + y * _w] = ((r < _rMax) ? 1 : 0) * (psfImBuffer[x + y * _w]  * (1 - _alpha + (_alpha * bgRemovedArray[cPlane + selectedPlanes[iz]][x + y * _w]/psf) ));
-
 					}
 				}
 				psfCentered.dataChanged();
