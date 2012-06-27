@@ -5,7 +5,6 @@ import plugins.praveen.fft.AssignFunctions;
 import plugins.praveen.fft.ComplexFunctions;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import icy.image.IcyBufferedImage;
-import icy.math.MathUtil;
 import icy.sequence.Sequence;
 import icy.type.DataType;
 
