@@ -4,16 +4,10 @@ import plugins.praveen.fft.AssignFunction2D;
 import plugins.praveen.fft.AssignFunctions;
 import plugins.praveen.fft.ComplexFunctions;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
-//import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
-//import loci.poi.util.ByteField;
 import icy.image.IcyBufferedImage;
-import icy.math.MathUtil;
 import icy.sequence.Sequence;
 import icy.type.DataType;
-//import icy.type.TypeUtil;
 
-//import plugins.adufour.ezplug.EzVarDouble;
-//import plugins.adufour.ezplug.EzVarInteger;
 
 public class MacroCalculator {
 	private int _w;
