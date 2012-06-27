@@ -155,8 +155,8 @@ public class PhaseRetrieve extends EzPlug {
 		for(int iz = 0;iz<_z;iz++)
 		{		
 			IcyBufferedImage zImage = sequence.getImage(0, iz, 0);			
-			zImage.updateComponentsBounds(true, true);
-			zMaxIntensity[iz] = zImage.getComponentUserMaxValue(0);
+			zImage.updateChannelsBounds();
+			zMaxIntensity[iz] = zImage.getChannelMax(0);
 			if(maxAxialIntensity < zMaxIntensity[iz])
 			{
 				cPlane = iz;
